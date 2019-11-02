@@ -1,0 +1,36 @@
+div.main
+  center
+    div.test-details.text-center
+      h3 Test Name 
+      h2 
+        = @test.code
+    div.test-id = @test.id
+    div.student-id = @student_id
+
+  div.instruction.text-center
+    | instruction
+
+  hr
+  div.question
+    .row
+      .col-md-1.col-md-offset-1.prob-number = @num
+      .col-md-6.prob = @test.problems.first['text'].html_safe
+      .col-md-1.prob-id = @test.problems.first['id']
+   
+  br
+  br
+  div.options.centre
+    - @test.problems.first['options'].each_with_index do |opt, idx|
+      .row
+        .col-md-2  
+        div.col-md-1 
+          = ('A'..'Z').to_a[idx]  
+          = radio_button_tag 'answer', idx+1, false, class: 'ans-radio-btn'
+        <!-- .col-md-1.radio-btn = radio_button_tag 'answer', idx+1, false -->
+        .col-md-6 = opt['text'].html_safe
+  br
+  hr
+
+  div.next-btn-area
+    center
+     = button_tag 'Save & Next', type: 'button', class: 'btn btn-primary next-btn'

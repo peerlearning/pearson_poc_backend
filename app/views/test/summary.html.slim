@@ -1,0 +1,18 @@
+center
+  h3 Summary  
+
+table.table.table-bordered
+  thead
+    tr
+    th Question number
+    th Your Answer 
+    th Answer
+    th Result
+    tbody
+      - @student_record.problems.each_with_index do |problem, idx|
+        tr
+          td = idx+1
+          td = problem['answer']
+          td = problem['cms_answer'].first
+          td = problem['cms_answer'].first == problem['answer'] ? 'Correct' : 'Incorrect' 
+

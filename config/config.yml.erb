@@ -1,0 +1,28 @@
+defaults: &defaults
+  s3_access_key_id: <%= ENV['AVANTI_S3_ACCESS_KEY_ID'] %>
+  s3_secret_access_key: <%= ENV['AVANTI_S3_SECRET_ACCESS_KEY'] %>
+  s3_region: <%= ENV['AVANTI_S3_REGION'] %>
+  aws_s3_region: <%= ENV['AVANTI_AWS_S3_REGION'] %>
+  s3_response_bucket: <%= ENV['AVANTI_S3_BUCKET'] %>
+
+development:
+  <<: *defaults
+  avanti_auth_base_url: 'http://localhost:3000'
+  s3_access_key_id:  "AKIAIYAJUCDESXA6LNCA"
+  s3_secret_access_key: "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"
+  s3_response_bucket: "avanti-test-student-poc-responses"
+  s3_region: 's3-ap-southeast-1'
+  aws_s3_region: 'ap-southeast-1'
+  
+
+test:
+  <<: *defaults
+  s3_response_bucket: "avanti-test-student-poc-responses"
+  s3_access_key_id:  "AKIAIYAJUCDESXA6LNCA"
+  s3_secret_access_key: "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"
+  s3_region: 's3-ap-southeast-1'
+  aws_s3_region: 'ap-southeast-1'
+ 
+
+production:
+  <<: *defaults
