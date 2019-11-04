@@ -38,7 +38,7 @@ class TestController < ApplicationController
 
 
     @str = StudentTestRecord.where(student_id: params[:student_id], test_id: test.id).last
-    problems = @str.problems
+    problems = @str.problems 
     problems.push({problem_id: problem_id, answer: student_answer,
                       cms_answer: current_problem['answer'], 
                       problem_difficulty: current_problem['difficulty_rating'],
@@ -68,7 +68,8 @@ class TestController < ApplicationController
   def start
 
     #test = Test.find_by(params[:id])
-    StudentTestRecord.create(student_id: params[:student_id], test_id: params[:id])
+    str = StudentTestRecord.create(student_id: params[:student_id], test_id: params[:id])
+    raise if str.blank?
     @student_id =  params[:student_id] || 'student_id' 
     @test = Test.first
     @num = 1
