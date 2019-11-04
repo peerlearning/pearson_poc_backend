@@ -8,7 +8,7 @@ $(document).ready ->
   #-----   load mathjax ----------------------------------------------------#
   ############################################################################
   loadJax()
-  $('.prob-id, .test-id, .student-id').hide()
+  $('.prob-id, .test-id, .student-id, .difficulty-used, .right-ans-count').hide()
 
 loadJax = ->
   window.MathJax.Hub.Queue [
