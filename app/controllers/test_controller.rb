@@ -68,10 +68,10 @@ class TestController < ApplicationController
   def start
 
     #test = Test.find_by(params[:id])
-    str = StudentTestRecord.create(student_id: params[:student_id], test_id: params[:id])
+    @test = Test.first
+    str = StudentTestRecord.create(student_id: params[:student_id], test_id: @test.to_param)
     raise if str.blank?
     @student_id =  params[:student_id] || 'student_id' 
-    @test = Test.first
     @num = 1
     @difficulty_used = 0
     @right_ans_count = 0
