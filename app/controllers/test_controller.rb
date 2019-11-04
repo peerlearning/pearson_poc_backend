@@ -2,10 +2,18 @@ class TestController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def next_problem
+
+    #right_ans_count => R
+    #problem_number => L
+    #Difficulty used  => H
+    #Difficulty of current problem => D
+   
     answer = params['answer']
-    test_id = params[:test_id]
+    test_id = params['test_id']
     problem_id = params['problem_id']
     problem_number = params['problem_number']
+    @difficulty_used = params['difficulty_used'].to_i
+    @right_ans_count = params['right_ans_count'].to_i
 
     test = Test.where(id: test_id).first
 
@@ -25,25 +33,50 @@ class TestController < ApplicationController
     if problem_number.to_i >= test.problems.length
       redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
     else
-
       #test = Test.find(test_id)
-      problem = get_next_problem(test.problems, problem_id, nil, problem_number)
-      render json: problem, status: :ok
+      next_problem = get_next_problem(test.problems, problem, answer, problem_number)
+      if next_problem
+        render json: next_problem, status: :ok
+      else
+        redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
+      end
     end
   end
 
-  def get_next_problem(problems, current_problem_id, result, number)
+  def get_next_problem(problems, current_problem, student_answer, number)
     
     ## Problem selection algo goes here
     # problem = problems.sample
+
+    if current_problem['answer'].first == student_answer
+      @right_ans_count = @right_ans_count.to_i + 1
+      approx_difficulty =  current_problem['difficulty_rating'].to_i + 2/number.to_i
+    else
+      approx_difficulty =  current_problem['difficulty_rating'].to_i - 2/number.to_i
+    end
+
+    if approx_difficulty >= 2 
+      prob_difficulty = 3
+    elsif approx_difficulty >= 0 && approx_difficulty < 2
+      prob_difficulty = 2
+    elsif approx_difficulty < 0
+      prob_difficulty = 1
+    else
+      #do nothing
+    end
+
     problem_ids = @str.problems.pluck(:problem_id)
-    
-    selected_problems = problems.select{|prob| prob unless problem_ids.include? prob[:id]}
+    selected_problems = problems.select{|prob| prob if (prob[:difficulty_rating] == prob_difficulty.to_s)}.select{|pblm| pblm  unless problem_ids.include? pblm[:id] }
+
     problem = selected_problems.sample
 
-    problem['number'] = number.to_i+1
-    if problem['number'] == problems.count
-      problem['last_problem'] = true
+    if problem.present?
+      problem['number'] = number.to_i+1
+      problem['difficulty_used'] = @difficulty_used.to_i + prob_difficulty.to_i
+      problem['right_ans_count'] = @right_ans_count
+      if problem['number'] == problems.count
+        problem['last_problem'] = true
+      end
     end
     problem
   end
@@ -55,6 +88,8 @@ class TestController < ApplicationController
     @student_id =  params[:student_id] || 'student_id' 
     @test = Test.first
     @num = 1
+    @difficulty_used = 0
+    @right_ans_count = 0
     # render json: @test, status: :ok
 
     # problem = test.problem.first
@@ -70,9 +105,9 @@ class TestController < ApplicationController
             final_ability_estimate: 0,
             responses: @student_record.problems
           }
-    file_name = params[:student_id] + '-' + params[:test_id] 
-    file_obj = aws_s3_client.bucket(Settings.s3_response_bucket).object(file_name)
-    file_obj.put(acl: 'public-read', body: data.to_json, content_type: 'application/json')
+    # file_name = params[:student_id] + '-' + params[:test_id] 
+    # file_obj = aws_s3_client.bucket(Settings.s3_response_bucket).object(file_name)
+    # file_obj.put(acl: 'public-read', body: data.to_json, content_type: 'application/json')
   end
 end
 

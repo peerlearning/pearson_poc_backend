@@ -18,7 +18,6 @@ loadJax = ->
   ]
 
 $(document).on "click",".next-btn",(e) ->
-  # debugger
   answer = document.querySelector('input[name="answer"]:checked').value
   testId = $('.test-id').text()
 
@@ -31,12 +30,15 @@ $(document).on "click",".next-btn",(e) ->
       problem_id: $('.prob-id').text(),
       test_id: testId
       student_id: $('.student-id').text()
+      difficulty_used : $('.difficulty-used').text()
+      right_ans_count: $('.right-ans-count').text()
     }
     success: (response) ->
-      # debugger
       $('.prob').html(response.text)
       $('.prob-id').html(response.id)
       $('.prob-number').html(response.number)
+      $('.difficulty-used').html(response.difficulty_used)
+      $('.right-ans-count').html(response.right_ans_count)
       $('input[name=answer]').attr('checked',false);
       if response.last_problem == true
         $('.next-btn').text('Save & Submit')
