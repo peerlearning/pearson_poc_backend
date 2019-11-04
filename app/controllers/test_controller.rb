@@ -19,7 +19,6 @@ class TestController < ApplicationController
 
     current_problem = test.problems.detect{|prob| prob if prob['id'] == problem_id}
 
-
     if current_problem['answer'].first == student_answer
       right_ans_count += 1
       approx_difficulty =  current_problem['difficulty_rating'].to_i + 2/problem_number.to_i
