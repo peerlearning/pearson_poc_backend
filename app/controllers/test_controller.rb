@@ -8,51 +8,23 @@ class TestController < ApplicationController
     #Difficulty used  => H
     #Difficulty of current problem => D
    
-    answer = params['answer']
+    student_answer = params['answer']
     test_id = params['test_id']
     problem_id = params['problem_id']
     problem_number = params['problem_number']
-    @difficulty_used = params['difficulty_used'].to_i
-    @right_ans_count = params['right_ans_count'].to_i
+    difficulty_used = params['difficulty_used'].to_i
+    right_ans_count = params['right_ans_count'].to_i
 
     test = Test.where(id: test_id).first
 
-    problem = test.problems.detect{|prob| prob if prob['id'] == problem_id}
+    current_problem = test.problems.detect{|prob| prob if prob['id'] == problem_id}
 
-    @str = StudentTestRecord.where(student_id: params[:student_id], test_id: test.id).last
-    problems = @str.problems
-
-    problems.push({problem_id: problem_id, answer: answer,
-                      cms_answer: problem['answer'], 
-                      problem_difficulty: problem['difficulty_rating'],
-                      Ability_estimate: 0
-                      })
-    @str.problems = problems
-    @str.save!
-
-    if problem_number.to_i >= test.problems.length
-      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
-    else
-      #test = Test.find(test_id)
-      next_problem = get_next_problem(test.problems, problem, answer, problem_number)
-      if next_problem
-        render json: next_problem, status: :ok
-      else
-        redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
-      end
-    end
-  end
-
-  def get_next_problem(problems, current_problem, student_answer, number)
-    
-    ## Problem selection algo goes here
-    # problem = problems.sample
 
     if current_problem['answer'].first == student_answer
-      @right_ans_count = @right_ans_count.to_i + 1
-      approx_difficulty =  current_problem['difficulty_rating'].to_i + 2/number.to_i
+      right_ans_count += 1
+      approx_difficulty =  current_problem['difficulty_rating'].to_i + 2/problem_number.to_i
     else
-      approx_difficulty =  current_problem['difficulty_rating'].to_i - 2/number.to_i
+      approx_difficulty =  current_problem['difficulty_rating'].to_i - 2/problem_number.to_i
     end
 
     if approx_difficulty >= 2 
@@ -65,20 +37,33 @@ class TestController < ApplicationController
       #do nothing
     end
 
+
+    @str = StudentTestRecord.where(student_id: params[:student_id], test_id: test.id).last
+    problems = @str.problems
+    problems.push({problem_id: problem_id, answer: student_answer,
+                      cms_answer: current_problem['answer'], 
+                      problem_difficulty: current_problem['difficulty_rating'],
+                      Ability_estimate: 0
+                      })
+    @str.problems = problems
+    @str.save!
+
+    next_problem = get_next_problem(test.problems, student_answer, prob_difficulty)
+    if next_problem
+      next_problem['number'] = problem_number.to_i+1
+      next_problem['difficulty_used'] = difficulty_used.to_i + prob_difficulty.to_i
+      next_problem['right_ans_count'] = right_ans_count
+      render json: next_problem, status: :ok
+    else
+      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
+    end
+  end
+
+  def get_next_problem(problems, student_answer, prob_difficulty)
     problem_ids = @str.problems.pluck(:problem_id)
     selected_problems = problems.select{|prob| prob if (prob[:difficulty_rating] == prob_difficulty.to_s)}.select{|pblm| pblm  unless problem_ids.include? pblm[:id] }
 
-    problem = selected_problems.sample
-
-    if problem.present?
-      problem['number'] = number.to_i+1
-      problem['difficulty_used'] = @difficulty_used.to_i + prob_difficulty.to_i
-      problem['right_ans_count'] = @right_ans_count
-      if problem['number'] == problems.count
-        problem['last_problem'] = true
-      end
-    end
-    problem
+    selected_problems.sample
   end
 
   def start
