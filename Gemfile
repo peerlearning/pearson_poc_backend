@@ -7,6 +7,7 @@ gem 'rails', '~> 5.2.3'
 gem 'puma', '~> 3.11'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
+gem 'therubyracer', :platforms => :ruby
 gem 'mongoid', '~> 6.0'
 gem 'bson_ext'
 gem 'coffee-rails', '~> 4.2'
@@ -18,7 +19,7 @@ gem 'sassc-rails', '>= 2.1.0'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jquery-rails'
 gem 'aws-sdk'
-gem 'settingslogic', '2.0.9'
+gem 'settingslogic', '2.0.9'  
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
