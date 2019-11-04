@@ -26,6 +26,21 @@ class TestController < ApplicationController
       approx_difficulty =  current_problem['difficulty_rating'].to_i - 2/problem_number.to_i
     end
 
+    wrong_answers = problem_number.to_i - right_ans_count
+    if wrong_answers == 0
+
+      ability_estimate =  difficulty_used/problem_number.to_f + Math.log((right_ans_count-0.5)/ (wrong_answers + 0.5), 2.71)
+      estimate_error = (problem_number.to_f/(right_ans_count - 0.5 * wrong_answers + 0.5)) **2
+
+    elsif right_ans_count == 0
+      ability_estimate =  difficulty_used/problem_number.to_f + Math.log((right_ans_count+0.5)/ (wrong_answers - 0.5), 2.71)
+      estimate_error = (problem_number.to_f/(right_ans_count + 0.5 * wrong_answers - 0.5)) **2
+    else
+      ability_estimate =  difficulty_used/problem_number.to_f + Math.log((right_ans_count / wrong_answers), 2.71)
+      estimate_error = (problem_number.to_f/(right_ans_count * wrong_answers)) **2
+    end
+
+
     if approx_difficulty >= 2 
       prob_difficulty = 3
     elsif approx_difficulty >= 0 && approx_difficulty < 2
@@ -42,7 +57,8 @@ class TestController < ApplicationController
     problems.push({problem_id: problem_id, answer: student_answer,
                       cms_answer: current_problem['answer'], 
                       problem_difficulty: current_problem['difficulty_rating'],
-                      Ability_estimate: 0
+                      ability_estimate: ability_estimate,
+                      estimate_error: estimate_error
                       })
     @str.problems = problems
     @str.save!
@@ -90,9 +106,9 @@ class TestController < ApplicationController
             final_ability_estimate: 0,
             responses: @student_record.problems
           }
-    # file_name = params[:student_id] + '-' + params[:test_id] 
-    # file_obj = aws_s3_client.bucket(Settings.s3_response_bucket).object(file_name)
-    # file_obj.put(acl: 'public-read', body: data.to_json, content_type: 'application/json')
+    file_name = params[:student_id] + '-' + params[:test_id] 
+    file_obj = aws_s3_client.bucket(Settings.s3_response_bucket).object(file_name)
+    file_obj.put(acl: 'public-read', body: data.to_json, content_type: 'application/json')
   end
 end
 
