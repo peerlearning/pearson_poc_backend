@@ -40,8 +40,7 @@ $(document).on "click",".next-btn",(e) ->
       $('.difficulty-used').html(response.difficulty_used)
       $('.right-ans-count').html(response.right_ans_count)
       $('input[name=answer]').attr('checked',false);
-      if response.last_problem == true
-        $('.next-btn').text('Save & Submit')
+      response.options.forEach (option, index) ->
+        $(".option-text-" + String(index)).html(option.text)
       loadJax()
-      # alert('response received')
 
