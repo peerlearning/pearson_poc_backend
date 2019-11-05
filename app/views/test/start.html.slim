@@ -29,7 +29,8 @@ div.main
           = ('A'..'Z').to_a[idx]  
           = radio_button_tag 'answer', idx+1, false, class: 'ans-radio-btn'
         <!-- .col-md-1.radio-btn = radio_button_tag 'answer', idx+1, false -->
-        .col-md-6 = opt['text'].html_safe
+        .col-md-6 class = "option-text-#{idx.to_s}" 
+          = opt['text'].html_safe
   br
   hr
 
