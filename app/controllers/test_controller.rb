@@ -11,7 +11,7 @@ class TestController < ApplicationController
     student_answer = params['answer']
     test_id = params['test_id']
     problem_id = params['problem_id']
-    problem_number = params['problem_number']
+    problem_number = params['problem_number'].to_i
     difficulty_used = params['difficulty_used'].to_i
     right_ans_count = params['right_ans_count'].to_i
 
@@ -64,13 +64,16 @@ class TestController < ApplicationController
     @str.save!
 
     next_problem = get_next_problem(test.problems, student_answer, prob_difficulty)
-    if next_problem
+    if next_problem.blank? || problem_number >= 15
+      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
+    else
+        # if next_problem
       next_problem['number'] = problem_number.to_i+1
       next_problem['difficulty_used'] = difficulty_used.to_i + prob_difficulty.to_i
       next_problem['right_ans_count'] = right_ans_count
       render json: next_problem, status: :ok
-    else
-      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
+    # else
+    #   redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
     end
   end
 
