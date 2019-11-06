@@ -65,7 +65,7 @@ class TestController < ApplicationController
 
     next_problem = get_next_problem(test.problems, student_answer, prob_difficulty)
     if next_problem.blank? || problem_number >= 15
-      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id]))
+      redirect_to(test_summary_path(test_id: test.id, student_id: params[:student_id], ability_estimate: ability_estimate ))
     else
       next_problem['number'] = problem_number.to_i+1
       next_problem['difficulty_used'] = difficulty_used.to_i + prob_difficulty.to_i
@@ -101,7 +101,7 @@ class TestController < ApplicationController
     data ={
             student_id: params[:student_id],
             test_code: 'code',
-            final_ability_estimate: 0,
+            final_ability_estimate: params[:ability_estimate],
             responses: @student_record.problems
           }
     file_name = params[:student_id] + '-' + params[:test_id] 
