@@ -1,9 +1,8 @@
 div.main
   center
     div.test-details.text-center
-      h3 Test Name 
-      h2 
-        = @test.code
+      h2 = @test.title 
+      <!-- h2     = @test.code -->
     div.test-id = @test.id
     div.student-id = @student_id
     div.difficulty-used = @difficulty_used
