@@ -8,8 +8,8 @@ defaults: &defaults
 development:
   <<: *defaults
   avanti_auth_base_url: 'http://localhost:3000'
-  s3_access_key_id:  "AKIAIYAJUCDESXA6LNCA"
-  s3_secret_access_key: "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"
+  s3_access_key_id:  "FILL_S3_KEY_HERE"
+  s3_secret_access_key: "FILL_S3_PRIVATE_KEY_HERE"
   s3_response_bucket: "avanti-test-student-poc-responses"
   s3_region: 's3-ap-southeast-1'
   aws_s3_region: 'ap-southeast-1'
@@ -18,8 +18,8 @@ development:
 test:
   <<: *defaults
   s3_response_bucket: "avanti-test-student-poc-responses"
-  s3_access_key_id:  "AKIAIYAJUCDESXA6LNCA"
-  s3_secret_access_key: "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"
+    s3_access_key_id:  "FILL_S3_KEY_HERE"
+  s3_secret_access_key: "FILL_S3_PRIVATE_KEY_HERE"
   s3_region: 's3-ap-southeast-1'
   aws_s3_region: 'ap-southeast-1'
  
